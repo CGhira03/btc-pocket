@@ -1,13 +1,13 @@
 <template>
-    <header>
+    <header class="principal-header">
       <button @click="goBack" class="btnGoBack">Volver Inicio</button>
-      <img src="@/assets/logo.png" alt="Logo"> 
+      <img src="@/assets/logo3.png" alt="" class="transactions-logo">
     </header>
     <div class="financial-analysis">
-      <h2>Análisis de Estado Actual</h2>
+      <h2 style="color: #ffffff; text-align: center;">Análisis de Estado Actual</h2>
   
       <!-- Tabla con detalles de criptomonedas -->
-      <table>
+      <table class="analisys-table">
         <thead>
           <tr>
             <th>Criptomoneda</th>
@@ -30,8 +30,8 @@
       </table>
   
       <!-- Tabla con resultado de inversiones -->
-      <h2>Resultado de Inversiones</h2>
-      <table>
+      <h2 style="color: #000000; text-align: center;">Resultado de Inversiones</h2>
+      <table class="analisys-table">
         <thead>
           <tr>
             <th>Criptomoneda</th>
@@ -50,7 +50,7 @@
     </div>
   </template>
   
-  <script>
+<script>
   import axios from "axios";
   import { useRouter } from "vue-router";
   
@@ -58,9 +58,9 @@
     data() {
       return {
         transactions: [],
-        cryptoData: {}, // Datos procesados de criptomonedas
-        totalMoney: 0,  // Total de dinero calculado
-        investmentResults: {}, // Resultados de las inversiones
+        cryptoData: {},
+        totalMoney: 0,  
+        investmentResults: {}, 
       };
     },
     setup() {
@@ -104,6 +104,9 @@
           const btcPrice = await this.fetchCryptoPrice("BTC");
           const ethPrice = await this.fetchCryptoPrice("ETH");
           const usdtPrice = await this.fetchCryptoPrice("USDT");
+          const daiPrice = await this.fetchCryptoPrice("DAI");
+          const solPrice = await this.fetchCryptoPrice("SOL");
+
   
           const cryptoData = {};
           const investmentResults = {};
@@ -119,21 +122,18 @@
               cryptoData[code] = { amount: 0, totalValue: 0 };
             }
   
-            // Actualizar cantidades y valores totales
             if (transaction.action === "purchase") {
               cryptoData[code].amount += amount;
             } else if (transaction.action === "sale") {
               cryptoData[code].amount -= amount;
             }
   
-            // Cálculo del valor actual
             const currentPrice =
-              code === "BTC" ? btcPrice : code === "ETH" ? ethPrice : usdtPrice;
+              code === "BTC" ? btcPrice : code === "ETH" ? ethPrice : code === "USDT" ? usdtPrice : code === "DAI" ? daiPrice : solPrice;
   
             cryptoData[code].totalValue = cryptoData[code].amount * currentPrice;
             totalMoney += cryptoData[code].totalValue;
   
-            // Calcular resultados de inversión
             investmentResults[code] =
               (cryptoData[code].amount * currentPrice) - money;
           });
@@ -169,72 +169,5 @@
       this.fetchTransactions();
     },
   };
-  </script>
-  
-  <style scoped>
-  .financial-analysis {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-  }
-  
-  h2, h3 {
-    text-align: center;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  th {
-    background-color: #f4f4f4;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .positive {
-    color: green;
-  }
-  
-  .negative {
-    color: red;
-  }
-  
-  img {
-    width: 60px;
-    padding-left: 60%;
-  }
-  
-  .btnGoBack {
-    background-color: #3533cd;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btnGoBack:hover {
-    background-color: #000000;
-    color: #ffffff;
-  }
-  
-  header {
-    background-color: #bfa3f7;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px;
-  }
-  </style>
+</script>
   

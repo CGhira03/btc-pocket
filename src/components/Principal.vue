@@ -1,124 +1,106 @@
 <template>
-    <header>
-      <img src="" alt="">
-      <button @click="logout" class="closeSesion">Cerrar Sesion</button>
-      <img src="@/assets/logo.png" alt="Logo">      
+  <div>
+    <header class="principal-header">
+      <img src="@/assets/logo2.png" alt="Logo" class="principal-logo" />
+      <button @click="logout" class="close-session">Cerrar Sesión</button>
     </header>
-    <div class="presentation">
-      <h1>Bienvenido a <span class="highlight">BTCPOCKET</span></h1>
-    </div>
-    <div class="btn-group">
-        <button @click="goToTransaction" class="btn">Registrar Transacción</button>
-        <button @click="goHistory" class="btn">Historial</button>
-        <button @click="goAnalisis" class="btn">Analisis</button>
-    </div>
 
-    
+    <div class="principal-content">
+      <div class="principal-info-section">
+        <div class="principal-presentation">
+          <h1>Bienvenido a <span class="highlight"><br>BTCPOCKET</span></h1>
+        </div>
+
+        <!-- Precios de Criptomonedas -->
+        <div id="app" class="crypto-container">
+          <h2>Precios de Criptomonedas</h2>
+          <ul class="crypto-list">
+            <li
+              class="crypto-item"
+              v-for="crypto in cryptos"
+              :key="crypto.code"
+            >
+              <IconifyIcon :icon="crypto.icon" class="crypto-icon" />
+              <div class="crypto-info">
+                <span class="crypto-name">{{ crypto.name }}</span>
+                <span v-if="crypto.buyPrice && crypto.sellPrice">
+                  Compra: $ {{ crypto.buyPrice }} | Venta: $ {{ crypto.sellPrice }}
+                </span>
+                <span v-else>Cargando...</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Botones de Acciones -->
+      <div class="principal-btn-group">
+        <button @click="goToTransaction" class="principal-btn">Registrar Transacción</button>
+        <button @click="goHistory" class="principal-btn">Historial</button>
+        <button @click="goAnalisis" class="principal-btn">Análisis</button>
+      </div>
+    </div>
+  </div>
 </template>
-  
-  <script>
-  import { useUserStore } from '../store/user';
-  import { useRouter } from 'vue-router';
-  
-  export default {
-    setup() {
-      const userStore = useUserStore();
-      const router = useRouter();
-  
-      const logout = () => {
-        userStore.logout();
-        router.push('/');
-      };
-  
-      const goToTransaction = () => {
+
+<script>
+import { useUserStore } from '../store/user';
+import { useRouter } from 'vue-router';
+import { reactive, onMounted } from 'vue';
+import axios from 'axios';
+
+export default {
+
+  setup() {
+    const userStore = useUserStore();
+    const router = useRouter();
+
+    const logout = () => {
+      userStore.logout();
+      router.push('/');
+    };
+
+    const goToTransaction = () => {
       router.push("/transactions");
-      };
+    };
 
-      const goHistory = () => {
+    const goHistory = () => {
       router.push("/history");
-      };
+    };
 
-      const goAnalisis = () => {
+    const goAnalisis = () => {
       router.push("/analisis");
-      };
+    };
 
-    return { logout, goToTransaction, goHistory, goAnalisis };
-    }
-  };
-  </script>
-  
-  <style scoped>
-  img{
-    width: 100px;
-  }
-  header{
-    background-color: #bfa3f7;
-    padding: 10px;
-  }
-  .closeSesion{
-    background-color: #3533cd;
-    color: white;
-    float: right;
-    margin-top: 30px;
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 25px;
-    font-size: 13px;
-  }
-  .btn-group {
-    display: flex; 
-    gap: 20px; 
-    justify-content: center; 
-    flex-wrap: wrap; 
-  }
-  .btn{
-    padding: 10px 20px;
-    background-color: #bfa3f7;
-    color: #3533cd;
-    font-weight: bold;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 20px;
-    width: 200px;
-  }
-   button:hover{
-    background-color: #3533cd;
-    color: #bfa3f7;
-  }
-  @media (max-width: 768px) {
-    .btn-group {
-      flex-direction: column; 
-      gap: 20px; 
-      align-items: center; 
-    }
+    // Definir los iconos de las criptomonedas usando los nombres correctos de Iconify
+    const cryptos = reactive([
+      { name: 'Bitcoin', code: 'btc', buyPrice: null, sellPrice: null, icon: 'bitcoin' }, 
+      { name: 'Ethereum', code: 'eth', buyPrice: null, sellPrice: null, icon: 'ethereum' }, 
+      { name: 'USDC', code: 'USDT', buyPrice: null, sellPrice: null, icon: 'currency-usd' }, 
+    ]);
 
-    .btn {
-      width: 100%; 
-      max-width: 400px; 
-    }
-  }
-  .presentation {
-    text-align: center; 
-    padding: 20px; 
-    font-family: Arial, sans-serif; 
-  }
+    const fetchCryptoPrices = async () => {
+      for (let crypto of cryptos) {
+        try {
+          const url = `https://criptoya.com/api/satoshitango/${crypto.code}/ars`;
+          const response = await axios.get(url);
+          crypto.buyPrice = response.data.ask;
+          crypto.sellPrice = response.data.bid;
+        } catch (error) {
+          console.error(`Error fetching price for ${crypto.name}:`, error);
+          crypto.buyPrice = 'Error';
+          crypto.sellPrice = 'Error';
+        }
+      }
+    };
 
-  .presentation h1 {
-    font-size: 2.5rem; 
-    font-weight: bold;
-    margin-top: 40px;
-    margin-bottom: 30px; 
-  }
+    onMounted(() => {
+      fetchCryptoPrices();
+      setInterval(fetchCryptoPrices, 30000); // Actualiza cada 30 segundos
+    });
 
-  .highlight {
-    font-size: 3rem;
-    font-weight: bolder; 
-    background: linear-gradient(1000deg, #000000, #3533c3, #3533cd); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent; 
-    display: inline-block; 
+    return { logout, goToTransaction, goHistory, goAnalisis, cryptos };
   }
-</style>
-  
+};
+</script>
+

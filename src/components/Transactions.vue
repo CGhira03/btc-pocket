@@ -1,74 +1,77 @@
 <template>
-    <div class="crypto-transaction">
-      <header>
+      <header class="principal-header">
         <button @click="goBack" class="btnGoBack">Volver Inicio</button>
-        <img src="@/assets/logo.png" alt="Logo" />
+        <img src="@/assets/logo3.png" alt="" class="transactions-logo">
       </header>
-  
-      <h2>Transacciones de Criptomonedas</h2>
-  
-      <div class="transaction-section">
-        <!-- Formulario de Compra -->
-        <div class="form-container">
-          <h3>Nueva Compra</h3>
-          <form @submit.prevent="submitPurchase">
-            <label for="crypto-buy">Criptomoneda:</label>
-            <select id="crypto-buy" v-model="purchase.cryptoCode" @change="updateBuyMoney" required>
-              <option value="BTC">Bitcoin (BTC)</option>
-              <option value="ETH">Ethereum (ETH)</option>
-              <option value="USDT">USDC</option>
-            </select>
-  
-            <div class="input-group">
-              <label>Monto a Comprar (ARS):</label>
-              <input
-                type="number"
-                v-model.number="purchase.amount"
-                @input="updateBuyTotal"
-                required
-                min="0.001"
-              />
-            </div>
-  
-            <p>Precio unitario (ARS): {{ purchase.money.toFixed(2) }}</p>
-            <p>Total a pagar: {{ calculateBuyTotal().toFixed(2) }} ARS</p>
-            <button type="submit" :disabled="!canPurchase">Comprar</button>
-          </form>
+      <section class="crypto-transaction">
+        <h2 class="transaction-title">Transacciones de Criptomonedas</h2>
+    
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="success">{{ successMessage }}</p>
+        <div class="transaction-section">
+          <!-- Formulario de Compra -->
+          <div class="transaction-form-container">
+            <h3 style="color: #ffffff;">Nueva Compra</h3>
+            <form @submit.prevent="submitPurchase" class="transaction-form">
+              <label for="crypto-buy">Criptomoneda:</label>
+              <select id="crypto-buy" v-model="purchase.cryptoCode" @change="updateBuyMoney" required>
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="ETH">Ethereum (ETH)</option>
+                <option value="USDT">USDC</option>
+                <option value="DAI">DAI</option>
+                <option value="SOL">SOL</option>
+              </select>
+    
+              <div class="input-group">
+                <label>Monto a Comprar (ARS):</label>
+                <input
+                  type="number"
+                  v-model.number="purchase.amount"
+                  @input="updateBuyTotal"
+                  required
+                  min="0.001"
+                />
+              </div>
+    
+              <p>Precio unitario (ARS): {{ purchase.money.toFixed(2) }}</p>
+              <p>Total a pagar: {{ calculateBuyTotal().toFixed(2) }} ARS</p>
+              <button type="submit" :disabled="!canPurchase">Comprar</button>
+            </form>
+          </div>
+    
+          <!-- Formulario de Venta -->
+          <div class="transaction-form-container">
+            <h3 style="color: #ffffff;">Nueva Venta</h3>
+            <form @submit.prevent="submitSale" class="transaction-form">
+              <label for="crypto-sell">Criptomoneda:</label>
+              <select id="crypto-sell" v-model="sale.cryptoCode" @change="updateSellMoney" required>
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="ETH">Ethereum (ETH)</option>
+                <option value="USDT">USDC</option>
+                <option value="DAI">DAI</option>
+                <option value="SOL">SOL</option>
+              </select>
+    
+              <div class="input-group">
+                <label>Monto a vender:</label>
+                <input
+                  type="number"
+                  v-model.number="sale.amount"
+                  @input="updateSellTotal"
+                  required
+                  min="0.001"
+                />
+              </div>
+    
+              <p>Precio unitario (ARS): {{ sale.money.toFixed(2) }}</p>
+              <p>Total a recibir: {{ calculateSellTotal().toFixed(2) }} ARS</p>
+              <button type="submit" :disabled="!canSell">Vender</button>
+            </form>
+          </div>
         </div>
-  
-        <!-- Formulario de Venta -->
-        <div class="form-container">
-          <h3>Nueva Venta</h3>
-          <form @submit.prevent="submitSale">
-            <label for="crypto-sell">Criptomoneda:</label>
-            <select id="crypto-sell" v-model="sale.cryptoCode" @change="updateSellMoney" required>
-              <option value="BTC">Bitcoin (BTC)</option>
-              <option value="ETH">Ethereum (ETH)</option>
-              <option value="USDT">USDC</option>
-            </select>
-  
-            <div class="input-group">
-              <label>Monto a vender:</label>
-              <input
-                type="number"
-                v-model.number="sale.amount"
-                @input="updateSellTotal"
-                required
-                min="0.001"
-              />
-            </div>
-  
-            <p>Precio unitario (ARS): {{ sale.money.toFixed(2) }}</p>
-            <p>Total a recibir: {{ calculateSellTotal().toFixed(2) }} ARS</p>
-            <button type="submit" :disabled="!canSell">Vender</button>
-          </form>
-        </div>
-      </div>
-  
-      <!-- Mensajes de éxito o error -->
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <p v-if="successMessage" class="success">{{ successMessage }}</p>
-    </div>
+    
+      </section>
+      
   </template>
   
   <script>
@@ -198,94 +201,5 @@
   };
   </script>
   
-  
-  <style scoped>
-  header{
-    background-color: #bfa3f7;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px;
-  }
-  .crypto-transaction {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #bfa3f7;
-  }
-  .transaction-section {
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: space-between;
-    gap: 20px;
-  }
-  .form-container {
-    flex: 1;
-    padding: 10px;
-    min-width: 200px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #ffffff;
-  }
-  @media screen and (max-width: 768px) {
-    .container {
-      flex-direction: column; 
-    }
-  
-    .container div {
-      width: 100%; 
-    }
-  }
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-  .success {
-    color: red;
-    margin-top: 10px;
-  }
-  form label {
-    display: block;
-    margin-top: 10px;
-  }
-  form input,
-  form select {
-    width: 100%;
-    padding: 5px 2px;
-    margin-top: 5px;
-    border: 1px solid #bfa3f7;
-    border-radius: 4px;
-  }
-  button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #3533cd;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #000000;
-  }
-  img{
-    width: 60px;
-    padding-left: 60%;
-  }
-  .btnGoBack{
-    background-color: #3533cd;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btnGoBack:hover{
-    background-color: #000000;
-    color: #ffffff;
-  }
-  </style>
+ 
     
