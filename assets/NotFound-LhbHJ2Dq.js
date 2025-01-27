@@ -1,0 +1,1 @@
+import{_ as o,c as a,a as n,o as t}from"./index-ChFEXi_e.js";const r={};function s(c,e){return t(),a("div",null,e[0]||(e[0]=[n("h1",null,"404 - Página no encontrada",-1),n("p",null,"La ruta solicitada no existe.",-1)]))}const d=o(r,[["render",s]]);export{d as default};
