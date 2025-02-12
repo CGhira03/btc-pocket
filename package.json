@@ -1,10 +1,11 @@
 {
+  "homepage": "http://localhost:5173/btc-pocket/",
   "name": "btc-pocket",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "deploy": "vite build && vite gh-pages",
+    "deploy": "vite build && gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"

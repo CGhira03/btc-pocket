@@ -5,7 +5,7 @@ import { useUserStore } from '../store/user';
 import Analisis from '@/components/Analisis.vue';
 import Transactions from '@/components/Transactions.vue';
 import History from '@/components/History.vue';
- 
+
 const routes = [
   { path: '/', name: 'Login', component: Login },
   {
@@ -20,27 +20,32 @@ const routes = [
         next('/');
       }
       console.log('Checking authentication:', userStore.userId);
-    }
+    },
   },
   {
-    path: "/transactions",
-    name: "Transactions",
+    path: '/transactions',
+    name: 'Transactions',
     component: Transactions,
   },
   {
-    path: "/history", 
-    name: "History",
+    path: '/history',
+    name: 'History',
     component: History,
   },
   {
-    path: "/analisis",
-    name: "Analisis",
-    component: Analisis
-  }
+    path: '/analisis',
+    name: 'Analisis',
+    component: Analisis,
+  },
+  {
+    path: '/:pathMatch(.*)*', 
+    name: 'NotFound',
+    component: () => import('@/components/NotFound.vue'), // Crea este componente para manejar 404.
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/btc-pocket/'), // Configuración con el prefijo correcto.
   routes,
 });
 
